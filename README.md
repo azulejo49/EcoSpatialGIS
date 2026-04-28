@@ -36,6 +36,3 @@ This project was built focusing on performance to guarantee fluid cartographic r
 4. **Data Management:** Open the Sidebar (Layers icon) to inspect your recorded features, locate them instantly via the crosshair targets, or strip out inaccurate points. 
 5. **Exporting to csv:** With your data populated, click the `Export csv` download icon in the toolbar to save your map Data.
 
-
-   vite.config.ts
-```
