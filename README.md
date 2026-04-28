@@ -16,6 +16,20 @@
 
   <!-- Subtitle -->
   <text x="120" y="90" font-family="Arial, sans-serif" font-size="14" fill="#9ca3af">
+    GIS &amp; Spatial Management
+  </text>
+</svg>
+
+  <!-- Title -->
+  <text x="120" y="65" font-family="Arial, sans-serif" font-size="28" fill="white">
+    OpenGIS - EcoSpatial
+  </text>
+
+  <!-- Trademark -->
+  <text x="515" y="40" font-family="Arial, sans-serif" font-size="14" fill="#9ca3af">™</text>
+
+  <!-- Subtitle -->
+  <text x="120" y="90" font-family="Arial, sans-serif" font-size="14" fill="#9ca3af">
     GIS & Spatial Management
   </text>
 </svg>
@@ -69,7 +83,6 @@ This project was built focusing on performance to guarantee fluid cartographic r
 
   <!-- Subtitle -->
   <text x="120" y="90" font-family="Arial, sans-serif" font-size="14" fill="#9ca3af">
-    GIS & Spatial Management
+    GIS &amp; Spatial Management
   </text>
 </svg>
-
