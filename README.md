@@ -1,15 +1,24 @@
-<div align="center">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120">
+  <rect width="600" height="120" rx="18" fill="#0f172a"/>
 
-<!-- Light mode badge -->
+  <!-- Logo -->
+  <g transform="translate(20,20) scale(0.15)">
+    <path fill="#34d399" d="M255.563 22.094c-126.81 0-229.594 102.784-229.594 229.594 0 25.4 4.132 49.846 11.75 72.687 40.154-24.203 76.02-41.17 107.56-52.03-35.752 5.615-66.405 23.66-109.843 4 31.552-27.765 87.682-65.842 138.532-71.658 26.58-21.615 68.113-43.962 89.655-37.28 30.492-26.873 67.982-61.093 108.125-85.75 10.667 16.156 17.124 35.94 12.563 57.874-80.37 20.205-61.692 148.928 13.468 67.44 6.348 13.064 9.41 26.665 9.095 41.436-32.675 33.83-66.97 63.026-101.938 87.906.466 23.99-5.605 52.915-19 84.813-5.635 13.42-7.33 36.406 22.875 53.97 101.14-24.012 176.375-114.924 176.375-223.408 0-126.81-102.815-229.593-229.625-229.593zm3.312 164.375c-17.835 2.22-32.794 9.046-45.844 18.968 12.083-.036 25.612 2.882 37.5 6.156 6.208-6.698 10.236-18.52 8.345-25.125z"/>
+  </g>
 
-<img width="340" src="data:image/svg+xml;utf8,
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 120'>
-<rect width='600' height='120' rx='18' fill='%23ffffff'/>
-<g transform='translate(20,20) scale(0.15)'>
- <path fill='%2334d399' d='M255.563 22.094c-126.81 0-229.594 102.784-229.594 229.594 0 25.4 4.132 49.846 11.75 72.687 40.154-24.203 76.02-41.17 107.56-52.03-35.752 5.615-66.405 23.66-109.843 4 31.552-27.765 87.682-65.842 138.532-71.658 26.58-21.615 68.113-43.962 89.655-37.28 30.492-26.873 67.982-61.093 108.125-85.75 10.667 16.156 17.124 35.94 12.563 57.874-80.37 20.205-61.692 148.928 13.468 67.44 6.348 13.064 9.41 26.665 9.095 41.436-32.675 33.83-66.97 63.026-101.938 87.906.466 23.99-5.605 52.915-19 84.813-5.635 13.42-7.33 36.406 22.875 53.97 101.14-24.012 176.375-114.924 176.375-223.408 0-126.81-102.815-229.593-229.625-229.593zm3.312 164.375c-17.835 2.22-32.794 9.046-45.844 18.968 12.083-.036 25.612 2.882 37.5 6.156 6.208-6.698 10.236-18.52 8.345-25.125z'/>
-</g>
-<text x='120' y='65' font-family='Arial, sans-serif' font-size='28' fill='%23000000'>
+  <!-- Title -->
+  <text x="120" y="65" font-family="Arial, sans-serif" font-size="28" fill="white">
+    OpenGIS - EcoSpatial
+  </text>
 
+  <!-- Trademark -->
+  <text x="515" y="40" font-family="Arial, sans-serif" font-size="14" fill="#9ca3af">™</text>
+
+  <!-- Subtitle -->
+  <text x="120" y="90" font-family="Arial, sans-serif" font-size="14" fill="#9ca3af">
+    GIS & Spatial Management
+  </text>
+</svg>
   # OpenGIS - EcoSpatial
   
   **Geographic Information System & Spatial Management**
@@ -42,15 +51,25 @@ This project was built focusing on performance to guarantee fluid cartographic r
 3. **Drafting a Cycle Route:** Select the `Cycle Route` tool. Start left-clicking/tapping the map to lay down waypoints. Your distance is dynamically generated. At the end, choose to save it as a continuous Loop, or absolute One-Way.
 4. **Data Management:** Open the Sidebar (Layers icon) to inspect your recorded features, locate them instantly via the crosshair targets, or strip out inaccurate points. 
 5. **Exporting to csv:** With your data populated, click the `Export csv` download icon in the toolbar to save your map Data.
-<div align="center">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120">
+  <rect width="600" height="120" rx="18" fill="#0f172a"/>
 
-<!-- Light mode badge -->
+  <!-- Logo -->
+  <g transform="translate(20,20) scale(0.15)">
+    <path fill="#34d399" d="M255.563 22.094c-126.81 0-229.594 102.784-229.594 229.594 0 25.4 4.132 49.846 11.75 72.687 40.154-24.203 76.02-41.17 107.56-52.03-35.752 5.615-66.405 23.66-109.843 4 31.552-27.765 87.682-65.842 138.532-71.658 26.58-21.615 68.113-43.962 89.655-37.28 30.492-26.873 67.982-61.093 108.125-85.75 10.667 16.156 17.124 35.94 12.563 57.874-80.37 20.205-61.692 148.928 13.468 67.44 6.348 13.064 9.41 26.665 9.095 41.436-32.675 33.83-66.97 63.026-101.938 87.906.466 23.99-5.605 52.915-19 84.813-5.635 13.42-7.33 36.406 22.875 53.97 101.14-24.012 176.375-114.924 176.375-223.408 0-126.81-102.815-229.593-229.625-229.593zm3.312 164.375c-17.835 2.22-32.794 9.046-45.844 18.968 12.083-.036 25.612 2.882 37.5 6.156 6.208-6.698 10.236-18.52 8.345-25.125z"/>
+  </g>
 
-<img width="340" src="data:image/svg+xml;utf8,
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 120'>
-<rect width='600' height='120' rx='18' fill='%23ffffff'/>
-<g transform='translate(20,20) scale(0.15)'>
- <path fill='%2334d399' d='M255.563 22.094c-126.81 0-229.594 102.784-229.594 229.594 0 25.4 4.132 49.846 11.75 72.687 40.154-24.203 76.02-41.17 107.56-52.03-35.752 5.615-66.405 23.66-109.843 4 31.552-27.765 87.682-65.842 138.532-71.658 26.58-21.615 68.113-43.962 89.655-37.28 30.492-26.873 67.982-61.093 108.125-85.75 10.667 16.156 17.124 35.94 12.563 57.874-80.37 20.205-61.692 148.928 13.468 67.44 6.348 13.064 9.41 26.665 9.095 41.436-32.675 33.83-66.97 63.026-101.938 87.906.466 23.99-5.605 52.915-19 84.813-5.635 13.42-7.33 36.406 22.875 53.97 101.14-24.012 176.375-114.924 176.375-223.408 0-126.81-102.815-229.593-229.625-229.593zm3.312 164.375c-17.835 2.22-32.794 9.046-45.844 18.968 12.083-.036 25.612 2.882 37.5 6.156 6.208-6.698 10.236-18.52 8.345-25.125z'/>
-</g>
-<text x='120' y='65' font-family='Arial, sans-serif' font-size='28' fill='%23000000'>
+  <!-- Title -->
+  <text x="120" y="65" font-family="Arial, sans-serif" font-size="28" fill="white">
+    OpenGIS - EcoSpatial
+  </text>
+
+  <!-- Trademark -->
+  <text x="515" y="40" font-family="Arial, sans-serif" font-size="14" fill="#9ca3af">™</text>
+
+  <!-- Subtitle -->
+  <text x="120" y="90" font-family="Arial, sans-serif" font-size="14" fill="#9ca3af">
+    GIS & Spatial Management
+  </text>
+</svg>
 
