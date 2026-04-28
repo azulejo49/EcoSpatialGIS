@@ -1,11 +1,18 @@
-# OpenGIS - EcoSpatial GIS - Geographic Information System & Spatial Management
-## Record WILDLIFE-WorldWide
-## Record Cycle Routes
-Author:
-##AMIRAM AZULAY##
+<div align="center">
+  <svg width="64" height="64" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <path fill="#34d399" d="M255.563 22.094c-126.81 0-229.594 102.784-229.594 229.594 0 25.4 4.132 49.846 11.75 72.687 40.154-24.203 76.02-41.17 107.56-52.03-35.752 5.615-66.405 23.66-109.843 4 31.552-27.765 87.682-65.842 138.532-71.658 26.58-21.615 68.113-43.962 89.655-37.28 30.492-26.873 67.982-61.093 108.125-85.75 10.667 16.156 17.124 35.94 12.563 57.874-80.37 20.205-61.692 148.928 13.468 67.44 6.348 13.064 9.41 26.665 9.095 41.436-32.675 33.83-66.97 63.026-101.938 87.906.466 23.99-5.605 52.915-19 84.813-5.635 13.42-7.33 36.406 22.875 53.97 101.14-24.012 176.375-114.924 176.375-223.408 0-126.81-102.815-229.593-229.625-229.593zm3.312 164.375c-17.835 2.22-32.794 9.046-45.844 18.968 12.083-.036 25.612 2.882 37.5 6.156 6.208-6.698 10.236-18.52 8.345-25.125z"/>
+  </svg>
+  
+  # OpenGIS - EcoSpatial
+  
+  **Geographic Information System & Spatial Management**
+</div>
 
-## Overview
-OpenGIS is a professional-grade, browser-based Geographic Information System (GIS) designed for pure client-side operation. It remains 100% free with no membership or registration needed. All spatial data is managed locally.
+> **Author:** Amiram Azulay
+
+## 🌍 Overview
+
+**OpenGIS EcoSpatial** is a professional-grade, browser-based Geographic Information System (GIS) designed for pure client-side spatial management. Engineered as a true Progressive Web App (PWA) | also as .HTML, it enables users to record wildlife worldwide, map cycle routes, and manage geographic data—all with complete privacy, zero mandatory backend infrastructure, and offline readiness.
 
 ## Features
 - **Spatial Management:** Add point markers, visualize data, and manage dynamic layers.
@@ -13,62 +20,22 @@ OpenGIS is a professional-grade, browser-based Geographic Information System (GI
 - **GeoJSON Ready:** Data can be exported for use in standardized GIS tools (QGIS, ArcGIS).
 - **In-App Documentation:** Built-in guidance for onboarding new users cleanly.
 - **Records Wild-Life WorldWide
-## Architecture
+## 🏗️ Architecture & Tech Stack
 
-* **Frontend Framework:** React 19 + TypeScript
-* **Build System:** Vite
+This project was built focusing on performance to guarantee fluid cartographic rendering in native browsers.
+
+* **Framework:** HTML
 * **Styling:** Tailwind CSS V4
 * **Map Engine:** Leaflet + react-leaflet
-* **State Management:** React Hooks (useState/useEffect for layers and tool modes)
 * **Data Persistence:** Local browser session (Exportable to local disk)
+## 📖 Usage Instructions
 
-## Developer Instructions (Logic & Setup)
+1. **Navigating the Map:** Use the standard Pan tool to navigate the globe. Open the Layer Manager (top right of the map) to toggle between OpenStreetMap, Satellite imagery, or Topographic views.
+2. **Recording Wildlife:** Select the `Wildlife Record` tool and tap any coordinate on the Map. A spatial form will prompt you to type the species name, verify the biological category, attach notes, and instantly compress an observational photo.
+3. **Drafting a Cycle Route:** Select the `Cycle Route` tool. Start left-clicking/tapping the map to lay down waypoints. Your distance is dynamically generated. At the end, choose to save it as a continuous Loop, or absolute One-Way.
+4. **Data Management:** Open the Sidebar (Layers icon) to inspect your recorded features, locate them instantly via the crosshair targets, or strip out inaccurate points. 
+5. **Exporting to csv:** With your data populated, click the `Export csv` download icon in the toolbar to save your map Data.
 
-To run the application locally in standard development mode:
-1. `npm install`
-2. `npm run dev`
 
-To build the application for production:
-1. `npm run build`
-
-### Code Architecture & Block Correlation
-
-The application is split into four primary architectural blocks:
-
-1. **State Engine (`App.tsx`):**
-   - Coordinates the active selected tool (e.g., 'add-marker', 'pan').
-   - Holds the master `features` array containing standard GeoJSON objects.
-   - Manages base layer switching.
-
-2. **Cartography Module (`components/MapView.tsx`):**
-   - Implements the Leaflet Map container.
-   - Handles map event captures (e.g., extracting latitude/longitude on user click).
-   - Renders GeoJSON data and Tile Layers.
-
-3. **Control Interface (`components/Sidebar.tsx` & `components/Toolbar.tsx`):**
-   - **Toolbar:** Triggers map interaction modes (Pan vs. Draw/Add).
-   - **Sidebar:** Lists current spatial features, providing options to center on them, delete them, and export the entire collection.
-
-4. **Documentation Module (`components/UserGuide.tsx`):**
-   - Self-contained modal presenting immediate instructions and GIS feature workflows directly to the user.
-
-## File Structure
-
-```text
-/
-public/
-src/
-components/
-MapView.tsx      # Map engine and layer rendering
- Sidebar.tsx      # Layer control and feature list
- Toolbar.tsx      # Main application actions
- UserGuide.tsx    # Integrated documentation
- types.ts           # Global interfaces (Features, Tools, etc.)
- utils.ts           # GIS utilities (GeoJSON export logic)
- index.css          # Tailwind and global overrides
- App.tsx            # Main layout and Application State
- main.tsx           # Entry point
-   package.json
-   readme.md              # Project documentation
    vite.config.ts
 ```
