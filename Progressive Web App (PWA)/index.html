@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EcoSpatial | Wildlife Conservation GIS</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c5e3b">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <style>
+        :root {
+            --primary-color: #2c5e3b;
+            --secondary-color: #4CAF50;
+            --route-color: #1e88e5;
+            --bg-color: #f4f7f6;
+            --panel-bg: #ffffff;
+            --text-main: #333333;
+            --border-color: #dddddd;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body { display: flex; flex-direction: column; height: 100vh; background-color: var(--bg-color); color: var(--text-main); overflow: hidden; }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .brand-container { display: flex; align-items: center; gap: 15px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; line-height: 1.2; }
+        header p { font-size: 0.9rem; opacity: 0.8; }
+        .header-status { font-size: 0.9rem; }
+
+        .container { display: flex; flex: 1; overflow: hidden; width: 100%; }
+
+        .sidebar {
+            width: 380px; background-color: var(--panel-bg); padding: 20px; overflow-y: auto;
+            border-right: 1px solid var(--border-color); box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            z-index: 999; display: flex; flex-direction: column;
+        }
+
+        .tabs { display: flex; margin-bottom: 15px; border-bottom: 2px solid var(--border-color); }
+        .tab-btn {
+            flex: 1; background: none; border: none; padding: 12px 10px; font-size: 1rem;
+            font-weight: bold; cursor: pointer; color: #777; transition: 0.2s;
+        }
+        .tab-btn.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); margin-bottom: -2px; }
+        .tab-content { display: none; flex: 1; flex-direction: column; }
+        .tab-content.active { display: flex; }
+
+        .sidebar h2 { font-size: 1.2rem; margin-bottom: 15px; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1rem; }
+        .form-group input[type="file"] { padding: 8px 5px; font-size: 0.9rem; background: #f9f9f9; }
+        .form-group input[readonly] { background-color: #f0f0f0; color: #555; font-weight: bold;}
+        
+        .coords-group { display: flex; gap: 10px; }
+        .helper-text { font-size: 0.85rem; color: #666; margin-top: 4px; font-style: italic; }
+        .alert-text { color: var(--route-color); font-weight: bold; }
+
+        .btn-main { width: 100%; background-color: var(--primary-color); color: white; border: none; padding: 12px; font-size: 1.05rem; border-radius: 4px; cursor: pointer; transition: 0.2s; font-weight: bold; margin-bottom: 10px; }
+        .btn-main:hover { background-color: #1e4028; }
+        
+        .btn-route { background-color: var(--route-color); }
+        .btn-route:hover { background-color: #1565c0; }
+        .btn-export { background-color: #2196F3; margin-top: 15px; }
+        .btn-export:hover { background-color: #0b7dda; }
+        .btn-danger { background-color: #e53935; display: none; }
+        .btn-danger:hover { background-color: #c62828; }
+
+        .record-list { margin-top: 20px; flex: 1; }
+        .record-item { background: #f9f9f9; border: 1px solid var(--border-color); padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 0.9rem; position: relative; transition: 0.2s; }
+        .record-item strong { color: var(--primary-color); display: block; font-size: 1rem; margin-bottom: 3px; padding-right: 30px; }
+        .record-item.route-item strong { color: var(--route-color); }
+        
+        .obs-image { max-width: 100%; max-height: 120px; border-radius: 4px; margin-top: 8px; border: 1px solid #ddd; object-fit: cover;}
+
+        .delete-btn { position: absolute; top: 10px; right: 10px; background: transparent; border: none; font-size: 1.3rem; cursor: pointer; padding: 5px; color: #888;}
+        .delete-btn:hover { color: #e53935; }
+
+        #map { flex: 1; height: 100%; z-index: 1; }
+
+        /* Install App Button */
+        #install-btn {
+            background-color: #ff9800;
+            display: none; /* Hidden until browser says PWA is ready */
+        }
+        #install-btn:hover { background-color: #e68a00; }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 12px; padding: 12px; }
+            .brand-container { flex-direction: row; justify-content: center; text-align: left; }
+            header h1 { font-size: 1.3rem; }
+            .header-status { text-align: center; font-size: 0.85rem; }
+            .container { flex-direction: column-reverse; }
+            .sidebar { width: 100%; flex: 1; border-right: none; border-top: 3px solid var(--primary-color); }
+            #map { flex: 0 0 45%; width: 100%; }
+            .coords-group { flex-direction: column; gap: 5px; }
+            .delete-btn { opacity: 1; background: rgba(255,255,255,0.8); border-radius: 50%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-container">
+            <svg width="45" height="45" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#fff" d="M255.563 22.094c-126.81 0-229.594 102.784-229.594 229.594 0 25.4 4.132 49.846 11.75 72.687 40.154-24.203 76.02-41.17 107.56-52.03-35.752 5.615-66.405 23.66-109.843 4 31.552-27.765 87.682-65.842 138.532-71.658 26.58-21.615 68.113-43.962 89.655-37.28 30.492-26.873 67.982-61.093 108.125-85.75 10.667 16.156 17.124 35.94 12.563 57.874-80.37 20.205-61.692 148.928 13.468 67.44 6.348 13.064 9.41 26.665 9.095 41.436-32.675 33.83-66.97 63.026-101.938 87.906.466 23.99-5.605 52.915-19 84.813-5.635 13.42-7.33 36.406 22.875 53.97 101.14-24.012 176.375-114.924 176.375-223.408 0-126.81-102.815-229.593-229.625-229.593zm3.312 164.375c-17.835 2.22-32.794 9.046-45.844 18.968 12.083-.036 25.612 2.882 37.5 6.156 6.208-6.698 10.236-18.52 8.345-25.125z"/></svg>
+            <div>
+                <h1>EcoSpatial GIS</h1>
+                <p>Spatial Management & Wildlife Database</p>
+            </div>
+        </div>
+        <div class="header-status">PWA Enabled | Auto-Save</div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar" id="sidebar-panel">
+            
+            <button id="install-btn" class="btn-main">📲 Install App to Home Screen</button>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('wildlife')">🦌 Wildlife Log</button>
+                <button class="tab-btn" onclick="switchTab('routes')">🚴 Cycle Routes</button>
+            </div>
+
+            <div id="tab-wildlife" class="tab-content active">
+                <form id="wildlife-form">
+                    <div class="form-group">
+                        <label>Species Name</label>
+                        <input type="text" id="species" placeholder="e.g., Red Fox" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="category" required>
+                            <option value="Mammal">Mammal</option>
+                            <option value="Bird">Bird</option>
+                            <option value="Reptile/Amphibian">Reptile / Amphibian</option>
+                            <option value="Plant">Plant / Flora</option>
+                            <option value="Fungi">Fungi</option>
+                            <option value="Insect">Insect</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Photo Evidence (Optional)</label>
+                        <input type="file" id="photo" accept="image/*">
+                        <p class="helper-text">Photos are auto-compressed to save local memory.</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Observer & Date</label>
+                        <div class="coords-group">
+                            <input type="text" id="observer" placeholder="Your Name" required>
+                            <input type="date" id="date" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Location Details</label>
+                        <div class="coords-group">
+                            <input type="number" step="any" id="lat" placeholder="Lat" required readonly>
+                            <input type="number" step="any" id="lng" placeholder="Lng" required readonly>
+                        </div>
+                        <input type="text" id="city" placeholder="City will auto-populate" style="margin-top: 5px;" readonly>
+                        <p class="helper-text" id="status-text">📍 Click the map to generate coordinates.</p>
+                    </div>
+                    <button type="submit" id="submit-btn" class="btn-main">Save Observation</button>
+                </form>
+
+                <div class="record-list">
+                    <h2>Saved Observations</h2>
+                    <div id="logs-container"><p class="helper-text" id="empty-state">No records yet.</p></div>
+                </div>
+                <button class="btn-main btn-export" onclick="exportData('wildlife')">⬇️ Export Logs (CSV)</button>
+            </div>
+
+            <div id="tab-routes" class="tab-content">
+                <div class="form-group">
+                    <label>Route Name</label>
+                    <input type="text" id="route-name" placeholder="e.g., Perimeter Patrol" required>
+                </div>
+                <div class="form-group">
+                    <label>Route Type</label>
+                    <select id="route-type" onchange="if(isDrawing) updateActivePolyline()">
+                        <option value="One Way">One Way (A to B)</option>
+                        <option value="Loop">Loop (Returns to Start)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Live Tracking Info</label>
+                    <div class="coords-group">
+                        <input type="text" id="route-dist" placeholder="0.00 km" readonly>
+                        <input type="text" id="route-time" placeholder="0 mins" readonly>
+                    </div>
+                    <p class="helper-text" id="route-status">📍 Click "Start Drawing" then tap map points.</p>
+                </div>
+
+                <button id="btn-start-route" class="btn-main btn-route" onclick="toggleDrawingMode()">✏️ Start Drawing Route</button>
+                <button id="btn-save-route" class="btn-main" style="display:none;" onclick="saveRoute()">✅ Finish & Save Route</button>
+                <button id="btn-cancel-route" class="btn-main btn-danger" onclick="cancelRoute()">❌ Cancel</button>
+
+                <div class="record-list">
+                    <h2>Saved Routes</h2>
+                    <div id="routes-container"><p class="helper-text" id="empty-routes">No routes yet.</p></div>
+                </div>
+            </div>
+        </aside>
+
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script>
+        // --- PWA SERVICE WORKER REGISTRATION ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => console.log('Service Worker registered', reg))
+                    .catch((err) => console.log('Service Worker failed', err));
+            });
+        }
+
+        // --- PWA INSTALLATION PROMPT ---
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block'; // Show our custom install button
+
+            installBtn.addEventListener('click', () => {
+                installBtn.style.display = 'none';
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    deferredPrompt = null;
+                });
+            });
+        });
+
+        // --- 1. INITIALIZATION & BASE MAPS ---
+        const map = L.map('map').setView([20.0, 0.0], 2);
+
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OSM' });
+        const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17, attribution: '© OpenTopoMap' });
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: '© Esri' });
+
+        osmLayer.addTo(map);
+
+        const baseMaps = {
+            "OpenStreetMap (Standard)": osmLayer,
+            "Topography": topoLayer,
+            "Satellite (Esri)": satelliteLayer
+        };
+        L.control.layers(baseMaps).addTo(map);
+
+        window.addEventListener('resize', () => map.invalidateSize());
+
+        // --- STATE DATABASES ---
+        let records = JSON.parse(localStorage.getItem('ecoRecords')) || [];
+        let routes = JSON.parse(localStorage.getItem('ecoRoutes')) || [];
+        
+        let mapMarkers = {}; 
+        let mapPolylines = {}; 
+        let tempMarker = null;
+
+        let currentTab = 'wildlife';
+        let isDrawing = false;
+        let activeRoutePoints = [];
+        let activePolyline = null;
+        let activeRouteMarkers = [];
+
+        document.getElementById('date').valueAsDate = new Date();
+
+        // --- 2. UI HELPERS ---
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+
+            if(tab === 'wildlife' && isDrawing) cancelRoute();
+        }
+
+        function scrollToSidebar() {
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar-panel').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // --- 3. MAP CLICK HANDLER ---
+        map.on('click', async function(e) {
+            if (currentTab === 'routes' && isDrawing) {
+                handleRouteClick(e.latlng);
+            } else if (currentTab === 'wildlife') {
+                handleWildlifeClick(e.latlng);
+            }
+        });
+
+        // --- 4. WILDLIFE LOGIC ---
+        async function handleWildlifeClick(latlng) {
+            document.getElementById('lat').value = latlng.lat.toFixed(5);
+            document.getElementById('lng').value = latlng.lng.toFixed(5);
+            document.getElementById('city').value = "Fetching location...";
+            document.getElementById('status-text').innerText = "⏳ Looking up city...";
+            
+            scrollToSidebar();
+
+            if (tempMarker) map.removeLayer(tempMarker);
+            tempMarker = L.marker([latlng.lat, latlng.lng], {opacity: 0.5}).addTo(map);
+
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}&zoom=10`);
+                const data = await response.json();
+                if(data && data.address) {
+                    const city = data.address.city || data.address.town || data.address.village || "Unknown Area";
+                    document.getElementById('city').value = `${city}, ${data.address.country || ''}`.replace(/^, | , $/g, '');
+                } else document.getElementById('city').value = "Remote Area";
+                document.getElementById('status-text').innerText = "✅ Location captured.";
+            } catch (error) { document.getElementById('city').value = "Offline"; }
+        }
+
+        function processImage(file) {
+            return new Promise((resolve) => {
+                if (!file) return resolve(null);
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_SIZE = 200; 
+                        let width = img.width; let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+                        } else {
+                            if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+                        }
+                        
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        document.getElementById('wildlife-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.innerText = "⏳ Saving..."; submitBtn.disabled = true;
+
+            const photoFile = document.getElementById('photo').files[0];
+            const compressedPhotoData = await processImage(photoFile);
+
+            const data = {
+                id: Date.now(), 
+                species: document.getElementById('species').value,
+                category: document.getElementById('category').value, 
+                observer: document.getElementById('observer').value,
+                date: document.getElementById('date').value, 
+                lat: parseFloat(document.getElementById('lat').value),
+                lng: parseFloat(document.getElementById('lng').value), 
+                city: document.getElementById('city').value,
+                photo: compressedPhotoData 
+            };
+
+            try {
+                records.push(data);
+                localStorage.setItem('ecoRecords', JSON.stringify(records));
+                
+                if (tempMarker) { map.removeLayer(tempMarker); tempMarker = null; }
+                addMarkerToMap(data); addRecordToSidebar(data);
+                
+                document.getElementById('species').value = '';
+                document.getElementById('photo').value = ''; 
+            } catch (err) {
+                alert("Storage Full! Delete some records or export them to CSV.");
+                records.pop();
+            }
+
+            submitBtn.innerText = "Save Observation"; submitBtn.disabled = false;
+        });
+
+        // --- 5. CYCLE ROUTE LOGIC ---
+        function toggleDrawingMode() {
+            isDrawing = true; activeRoutePoints = [];
+            document.getElementById('btn-start-route').style.display = 'none';
+            document.getElementById('btn-save-route').style.display = 'block';
+            document.getElementById('btn-cancel-route').style.display = 'block';
+            document.getElementById('route-status').innerText = "🔵 Tap map to add waypoints.";
+            document.getElementById('route-status').classList.add('alert-text');
+        }
+
+        function handleRouteClick(latlng) {
+            activeRoutePoints.push(latlng);
+            const dot = L.circleMarker(latlng, {radius: 4, color: '#1e88e5', fillOpacity: 1}).addTo(map);
+            activeRouteMarkers.push(dot);
+            updateActivePolyline();
+        }
+
+        function updateActivePolyline() {
+            if (activeRoutePoints.length === 0) return;
+            if (activePolyline) map.removeLayer(activePolyline);
+            
+            let renderPoints = [...activeRoutePoints];
+            if (document.getElementById('route-type').value === 'Loop' && renderPoints.length > 1) {
+                renderPoints.push(renderPoints[0]);
+            }
+            activePolyline = L.polyline(renderPoints, {color: '#1e88e5', weight: 4, dashArray: '5, 10'}).addTo(map);
+            calculateRouteStats(renderPoints);
+        }
+
+        function calculateRouteStats(points) {
+            if (points.length < 2) {
+                document.getElementById('route-dist').value = `0.00 km`;
+                document.getElementById('route-time').value = `0 mins`;
+                return;
+            }
+            let totalMeters = 0;
+            for (let i = 0; i < points.length - 1; i++) totalMeters += map.distance(points[i], points[i+1]);
+            
+            const distanceKm = (totalMeters / 1000).toFixed(2);
+            const timeMins = Math.round((distanceKm / 16) * 60);
+
+            document.getElementById('route-dist').value = `${distanceKm} km`;
+            document.getElementById('route-time').value = `~${timeMins} mins`;
+        }
+
+        function saveRoute() {
+            if (activeRoutePoints.length < 2) return alert("Tap at least 2 points.");
+            const type = document.getElementById('route-type').value;
+            if (type === 'Loop') activeRoutePoints.push(activeRoutePoints[0]); 
+
+            const data = {
+                id: Date.now(), name: document.getElementById('route-name').value || "Unnamed Route", type: type,
+                distance: document.getElementById('route-dist').value, time: document.getElementById('route-time').value,
+                points: activeRoutePoints.map(p => ({lat: p.lat, lng: p.lng}))
+            };
+
+            routes.push(data);
+            localStorage.setItem('ecoRoutes', JSON.stringify(routes));
+            addRouteToMap(data); addRouteToSidebar(data); cancelRoute(); 
+            document.getElementById('route-name').value = '';
+        }
+
+        function cancelRoute() {
+            isDrawing = false; activeRoutePoints = [];
+            if (activePolyline) map.removeLayer(activePolyline);
+            activeRouteMarkers.forEach(m => map.removeLayer(m)); activeRouteMarkers = [];
+            
+            document.getElementById('btn-start-route').style.display = 'block';
+            document.getElementById('btn-save-route').style.display = 'none';
+            document.getElementById('btn-cancel-route').style.display = 'none';
+            document.getElementById('route-status').innerText = "📍 Tap 'Start Drawing' then tap map points.";
+            document.getElementById('route-status').classList.remove('alert-text');
+            document.getElementById('route-dist').value = ''; document.getElementById('route-time').value = '';
+        }
+
+        // --- 6. RENDERING ---
+        function addMarkerToMap(data) {
+            const imgHtml = data.photo ? `<br><img src="${data.photo}" class="obs-image">` : '';
+            mapMarkers[data.id] = L.marker([data.lat, data.lng]).addTo(map).bindPopup(`<b>${data.species}</b><br>${data.city}<br>By ${data.observer}${imgHtml}`);
+        }
+
+        function addRecordToSidebar(data) {
+            document.getElementById('empty-state').style.display = 'none';
+            const div = document.createElement('div'); div.className = 'record-item'; div.id = `record-${data.id}`;
+            const imgHtml = data.photo ? `<img src="${data.photo}" class="obs-image">` : '';
+            div.innerHTML = `<button class="delete-btn" onclick="deleteRecord(${data.id}, 'wildlife')">🗑️</button>
+                <strong>${data.species} (${data.category})</strong>📍 ${data.city}<br>👤 ${data.observer}${imgHtml}`;
+            document.getElementById('logs-container').prepend(div);
+        }
+
+        function addRouteToMap(data) {
+            mapPolylines[data.id] = L.polyline(data.points, {color: '#1e88e5', weight: 4}).addTo(map).bindPopup(`<b>${data.name}</b><br>${data.distance} | ${data.time}<br>Type: ${data.type}`);
+        }
+
+        function addRouteToSidebar(data) {
+            document.getElementById('empty-routes').style.display = 'none';
+            const div = document.createElement('div'); div.className = 'record-item route-item'; div.id = `route-${data.id}`;
+            div.innerHTML = `<button class="delete-btn" onclick="deleteRecord(${data.id}, 'route')">🗑️</button>
+                <strong>🚴 ${data.name}</strong>📏 ${data.distance} | ⏱️ ${data.time}<br>🔄 ${data.type}`;
+            document.getElementById('routes-container').prepend(div);
+        }
+
+        // --- 7. DELETION & EXPORT ---
+        function deleteRecord(id, type) {
+            if(!confirm("Delete this item permanently?")) return;
+            if (type === 'wildlife') {
+                map.removeLayer(mapMarkers[id]); delete mapMarkers[id];
+                document.getElementById(`record-${id}`).remove();
+                records = records.filter(r => r.id !== id);
+                localStorage.setItem('ecoRecords', JSON.stringify(records));
+                if(records.length===0) document.getElementById('empty-state').style.display = 'block';
+            } else {
+                map.removeLayer(mapPolylines[id]); delete mapPolylines[id];
+                document.getElementById(`route-${id}`).remove();
+                routes = routes.filter(r => r.id !== id);
+                localStorage.setItem('ecoRoutes', JSON.stringify(routes));
+                if(routes.length===0) document.getElementById('empty-routes').style.display = 'block';
+            }
+        }
+
+        function exportData(type) {
+            if (records.length === 0) return alert("No data to export.");
+            let csv = "ID,Species,Category,Observer,Date,Lat,Lng,City,HasPhoto\n";
+            records.forEach(r => csv += `"${r.id}","${r.species}","${r.category}","${r.observer}","${r.date}",${r.lat},${r.lng},"${r.city}","${r.photo ? "Yes" : "No"}"\n`);
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `wildlife_data.csv`;
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        // Boot
+        records.forEach(r => { addMarkerToMap(r); addRecordToSidebar(r); });
+        routes.forEach(r => { addRouteToMap(r); addRouteToSidebar(r); });
+    </script>
+</body>
+</html>

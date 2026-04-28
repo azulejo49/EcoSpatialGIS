@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply antialiased text-slate-900 bg-slate-50;
+  }
+}
+
+/* Fix Leaflet Map z-indexes relative to our overlay UI */
+.leaflet-container {
+  z-index: 10 !important;
+}
+
+.leaflet-bottom.leaflet-right {
+  z-index: 15 !important;
+}
+
+.leaflet-top.leaflet-left {
+  z-index: 15 !important;
+}
+
+/* Base override for crosshair tool mode */
+.mode-add-marker .leaflet-container {
+  cursor: crosshair !important;
+}
+.mode-add-marker .leaflet-interactive {
+  cursor: crosshair !important;
+}
+
+.custom-popup .leaflet-popup-content-wrapper {
+  @apply rounded-lg shadow-xl border-slate-200;
+}
+
+.custom-popup .leaflet-popup-tip {
+  @apply shadow-xl text-white;
+}

@@ -1,0 +1,8 @@
+{
+  "name": "OpenGIS - Spatial Management",
+  "description": "Professional Geographic Information System for spatial management, visualization, and GeoJSON export. Free, no registration required.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": []
+}
