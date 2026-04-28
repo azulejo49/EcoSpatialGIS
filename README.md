@@ -17,7 +17,7 @@
 ## Features
 - **Spatial Management:** Add point markers, visualize data, and manage dynamic layers.
 - **Client-Side Processing:** No backend required, ensuring complete data privacy.
-- **GeoJSON Ready:** Data can be exported for use in standardized GIS tools (QGIS, ArcGIS).
+- **Csv Ready:** Data can be exported for use in standardized GIS tools (QGIS, ArcGIS).
 - **In-App Documentation:** Built-in guidance for onboarding new users cleanly.
 - **Records Wild-Life WorldWide
 ## 🏗️ Architecture & Tech Stack
