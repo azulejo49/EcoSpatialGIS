@@ -22,7 +22,6 @@
 
         body { display: flex; flex-direction: column; height: 100vh; background-color: var(--bg-color); color: var(--text-main); overflow: hidden; }
 
-        /* Header Styling with Brand Container */
         header {
             background-color: var(--primary-color);
             color: white;
@@ -34,12 +33,7 @@
             z-index: 1000;
         }
 
-        .brand-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
+        .brand-container { display: flex; align-items: center; gap: 15px; }
         header h1 { font-size: 1.5rem; font-weight: 600; line-height: 1.2; }
         header p { font-size: 0.9rem; opacity: 0.8; }
         .header-status { font-size: 0.9rem; }
@@ -47,18 +41,12 @@
         .container { display: flex; flex: 1; overflow: hidden; width: 100%; }
 
         .sidebar {
-            width: 380px;
-            background-color: var(--panel-bg);
-            padding: 20px;
-            overflow-y: auto;
-            border-right: 1px solid var(--border-color);
-            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
+            width: 380px; background-color: var(--panel-bg); padding: 20px;
+            overflow-y: auto; border-right: 1px solid var(--border-color);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05); z-index: 999;
+            display: flex; flex-direction: column;
         }
 
-        /* Tabs System */
         .tabs { display: flex; margin-bottom: 15px; border-bottom: 2px solid var(--border-color); }
         .tab-btn {
             flex: 1; background: none; border: none; padding: 12px 10px; font-size: 1rem;
@@ -82,7 +70,6 @@
 
         .btn-main { width: 100%; background-color: var(--primary-color); color: white; border: none; padding: 12px; font-size: 1.05rem; border-radius: 4px; cursor: pointer; transition: 0.2s; font-weight: bold; margin-bottom: 10px; }
         .btn-main:hover { background-color: #1e4028; }
-        
         .btn-route { background-color: var(--route-color); }
         .btn-route:hover { background-color: #1565c0; }
         .btn-export { background-color: #2196F3; margin-top: 15px; }
@@ -91,60 +78,51 @@
         .btn-danger:hover { background-color: #c62828; }
 
         .record-list { margin-top: 20px; flex: 1; }
-        .record-item { background: #f9f9f9; border: 1px solid var(--border-color); padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 0.9rem; position: relative; transition: 0.2s; }
+        
+        /* Added hover effect to indicate items are clickable */
+        .record-item { background: #f9f9f9; border: 1px solid var(--border-color); padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 0.9rem; position: relative; transition: 0.2s; cursor: pointer; }
+        .record-item:hover { background-color: #f0f4f1; border-color: var(--primary-color); }
+        .route-item:hover { background-color: #f0f7fd; border-color: var(--route-color); }
+
         .record-item strong { color: var(--primary-color); display: block; font-size: 1rem; margin-bottom: 3px; padding-right: 30px; }
         .record-item.route-item strong { color: var(--route-color); }
         
         .obs-image { max-width: 100%; max-height: 120px; border-radius: 4px; margin-top: 8px; border: 1px solid #ddd; object-fit: cover;}
 
-        .delete-btn { position: absolute; top: 10px; right: 10px; background: transparent; border: none; font-size: 1.3rem; cursor: pointer; padding: 5px; color: #888;}
+        .delete-btn { position: absolute; top: 10px; right: 10px; background: transparent; border: none; font-size: 1.3rem; cursor: pointer; padding: 5px; color: #888; z-index: 2; }
         .delete-btn:hover { color: #e53935; }
 
         #map { flex: 1; height: 100%; z-index: 1; }
 
-        /* =========================================
-           MOBILE RESPONSIVENESS
-           ========================================= */
+        .locate-btn {
+            background: white; border: none; border-radius: 4px;
+            width: 34px; height: 34px; font-size: 1.2rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.65); transition: background-color 0.2s;
+        }
+        .locate-btn:hover { background: #f4f4f4; }
+
+        .custom-number-icon { background: none; border: none; }
+        .marker-number {
+            background-color: var(--primary-color); color: white;
+            border: 2px solid white; border-radius: 50%;
+            width: 28px; height: 28px; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: bold; font-size: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .marker-route-number { background-color: var(--route-color); }
+
         @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                gap: 12px;
-                padding: 12px;
-            }
-            .brand-container {
-                flex-direction: row;
-                justify-content: center;
-                text-align: left;
-            }
+            header { flex-direction: column; gap: 12px; padding: 12px; }
+            .brand-container { flex-direction: row; justify-content: center; text-align: left; }
             header h1 { font-size: 1.3rem; }
             .header-status { text-align: center; font-size: 0.85rem; }
-            
-            .container {
-                flex-direction: column-reverse; /* Puts Map on Top, Sidebar on Bottom */
-            }
-            
-            .sidebar {
-                width: 100%;
-                flex: 1; /* Takes up bottom half */
-                border-right: none;
-                border-top: 3px solid var(--primary-color);
-            }
-
-            #map {
-                flex: 0 0 45%; /* Map takes up 45% of the screen height */
-                width: 100%;
-            }
-
-            .coords-group {
-                flex-direction: column;
-                gap: 5px;
-            }
-
-            .delete-btn {
-                opacity: 1; 
-                background: rgba(255,255,255,0.8);
-                border-radius: 50%;
-            }
+            .container { flex-direction: column-reverse; }
+            .sidebar { width: 100%; flex: 1; border-right: none; border-top: 3px solid var(--primary-color); }
+            #map { flex: 0 0 45%; width: 100%; }
+            .coords-group { flex-direction: column; gap: 5px; }
+            .delete-btn { opacity: 1; background: rgba(255,255,255,0.8); border-radius: 50%; }
         }
     </style>
 </head>
@@ -266,16 +244,36 @@
         const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: '© Esri' });
 
         osmLayer.addTo(map);
+        L.control.layers({ "OpenStreetMap": osmLayer, "Topography": topoLayer, "Satellite": satelliteLayer }).addTo(map);
 
-        const baseMaps = {
-            "OpenStreetMap (Standard)": osmLayer,
-            "Topography": topoLayer,
-            "Satellite (Esri)": satelliteLayer
-        };
-        L.control.layers(baseMaps).addTo(map);
-
-        // Map refresh handler for mobile orientation changes
         window.addEventListener('resize', () => map.invalidateSize());
+
+        // --- GPS LOCATE CONTROL ---
+        const locateControl = L.control({position: 'bottomright'});
+        locateControl.onAdd = function (map) {
+            const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            div.innerHTML = `<button class="locate-btn" title="Current Location">🎯</button>`;
+            
+            // NEW: This shield stops the click from passing through to the map underneath
+            L.DomEvent.disableClickPropagation(div);
+
+            div.onclick = function(e){
+                e.preventDefault();
+                e.stopPropagation(); // Double protection against click-through
+                map.locate({setView: true, maxZoom: 16});
+            };
+            return div;
+        };
+        locateControl.addTo(map);
+
+        let userLocationMarker;
+        map.on('locationfound', function(e) {
+            if (userLocationMarker) map.removeLayer(userLocationMarker);
+            userLocationMarker = L.circleMarker(e.latlng, {
+                radius: 8, fillColor: "#2196F3", color: "#fff", weight: 2, opacity: 1, fillOpacity: 1
+            }).addTo(map).bindPopup("You are here.").openPopup();
+        });
+        map.on('locationerror', function() { alert("Could not access location. Please check browser permissions."); });
 
         // --- STATE DATABASES ---
         let records = JSON.parse(localStorage.getItem('ecoRecords')) || [];
@@ -305,11 +303,13 @@
             if(tab === 'wildlife' && isDrawing) cancelRoute();
         }
 
-        // Auto-scroll for mobile users so they see the form after tapping map
         function scrollToSidebar() {
-            if (window.innerWidth <= 768) {
-                document.getElementById('sidebar-panel').scrollIntoView({ behavior: 'smooth' });
-            }
+            if (window.innerWidth <= 768) { document.getElementById('sidebar-panel').scrollIntoView({ behavior: 'smooth' }); }
+        }
+
+        // Pans map back to top on mobile view
+        function scrollMapToView() {
+            if (window.innerWidth <= 768) { window.scrollTo({ top: 0, behavior: 'smooth' }); }
         }
 
         // --- 3. MAP CLICK HANDLER ---
@@ -329,7 +329,6 @@
             document.getElementById('status-text').innerText = "⏳ Looking up city...";
             
             scrollToSidebar();
-
             if (tempMarker) map.removeLayer(tempMarker);
             tempMarker = L.marker([latlng.lat, latlng.lng], {opacity: 0.5}).addTo(map);
 
@@ -354,13 +353,8 @@
                         const canvas = document.createElement('canvas');
                         const MAX_SIZE = 200; 
                         let width = img.width; let height = img.height;
-
-                        if (width > height) {
-                            if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
-                        } else {
-                            if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
-                        }
-                        
+                        if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+                        } else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
                         canvas.width = width; canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
@@ -380,32 +374,26 @@
             const photoFile = document.getElementById('photo').files[0];
             const compressedPhotoData = await processImage(photoFile);
 
+            const displayNum = records.length > 0 ? Math.max(...records.map(r => r.displayNum || 0)) + 1 : 1;
+
             const data = {
-                id: Date.now(), 
-                species: document.getElementById('species').value,
-                category: document.getElementById('category').value, 
-                observer: document.getElementById('observer').value,
-                date: document.getElementById('date').value, 
-                lat: parseFloat(document.getElementById('lat').value),
-                lng: parseFloat(document.getElementById('lng').value), 
-                city: document.getElementById('city').value,
-                photo: compressedPhotoData 
+                id: Date.now(), displayNum: displayNum,
+                species: document.getElementById('species').value, category: document.getElementById('category').value, 
+                observer: document.getElementById('observer').value, date: document.getElementById('date').value, 
+                lat: parseFloat(document.getElementById('lat').value), lng: parseFloat(document.getElementById('lng').value), 
+                city: document.getElementById('city').value, photo: compressedPhotoData 
             };
 
             try {
                 records.push(data);
                 localStorage.setItem('ecoRecords', JSON.stringify(records));
-                
                 if (tempMarker) { map.removeLayer(tempMarker); tempMarker = null; }
                 addMarkerToMap(data); addRecordToSidebar(data);
-                
-                document.getElementById('species').value = '';
-                document.getElementById('photo').value = ''; 
+                document.getElementById('species').value = ''; document.getElementById('photo').value = ''; 
             } catch (err) {
                 alert("Storage Full! Delete some records or export them to CSV.");
                 records.pop();
             }
-
             submitBtn.innerText = "Save Observation"; submitBtn.disabled = false;
         });
 
@@ -422,36 +410,27 @@
         function handleRouteClick(latlng) {
             activeRoutePoints.push(latlng);
             const dot = L.circleMarker(latlng, {radius: 4, color: '#1e88e5', fillOpacity: 1}).addTo(map);
-            activeRouteMarkers.push(dot);
-            updateActivePolyline();
+            activeRouteMarkers.push(dot); updateActivePolyline();
         }
 
         function updateActivePolyline() {
             if (activeRoutePoints.length === 0) return;
             if (activePolyline) map.removeLayer(activePolyline);
-            
             let renderPoints = [...activeRoutePoints];
-            if (document.getElementById('route-type').value === 'Loop' && renderPoints.length > 1) {
-                renderPoints.push(renderPoints[0]);
-            }
+            if (document.getElementById('route-type').value === 'Loop' && renderPoints.length > 1) renderPoints.push(renderPoints[0]);
             activePolyline = L.polyline(renderPoints, {color: '#1e88e5', weight: 4, dashArray: '5, 10'}).addTo(map);
             calculateRouteStats(renderPoints);
         }
 
         function calculateRouteStats(points) {
             if (points.length < 2) {
-                document.getElementById('route-dist').value = `0.00 km`;
-                document.getElementById('route-time').value = `0 mins`;
-                return;
+                document.getElementById('route-dist').value = `0.00 km`; document.getElementById('route-time').value = `0 mins`; return;
             }
             let totalMeters = 0;
             for (let i = 0; i < points.length - 1; i++) totalMeters += map.distance(points[i], points[i+1]);
-            
             const distanceKm = (totalMeters / 1000).toFixed(2);
-            const timeMins = Math.round((distanceKm / 16) * 60);
-
             document.getElementById('route-dist').value = `${distanceKm} km`;
-            document.getElementById('route-time').value = `~${timeMins} mins`;
+            document.getElementById('route-time').value = `~${Math.round((distanceKm / 16) * 60)} mins`;
         }
 
         function saveRoute() {
@@ -459,14 +438,16 @@
             const type = document.getElementById('route-type').value;
             if (type === 'Loop') activeRoutePoints.push(activeRoutePoints[0]); 
 
+            const displayNum = routes.length > 0 ? Math.max(...routes.map(r => r.displayNum || 0)) + 1 : 1;
+
             const data = {
-                id: Date.now(), name: document.getElementById('route-name').value || "Unnamed Route", type: type,
+                id: Date.now(), displayNum: displayNum,
+                name: document.getElementById('route-name').value || "Unnamed Route", type: type,
                 distance: document.getElementById('route-dist').value, time: document.getElementById('route-time').value,
                 points: activeRoutePoints.map(p => ({lat: p.lat, lng: p.lng}))
             };
 
-            routes.push(data);
-            localStorage.setItem('ecoRoutes', JSON.stringify(routes));
+            routes.push(data); localStorage.setItem('ecoRoutes', JSON.stringify(routes));
             addRouteToMap(data); addRouteToSidebar(data); cancelRoute(); 
             document.getElementById('route-name').value = '';
         }
@@ -475,7 +456,6 @@
             isDrawing = false; activeRoutePoints = [];
             if (activePolyline) map.removeLayer(activePolyline);
             activeRouteMarkers.forEach(m => map.removeLayer(m)); activeRouteMarkers = [];
-            
             document.getElementById('btn-start-route').style.display = 'block';
             document.getElementById('btn-save-route').style.display = 'none';
             document.getElementById('btn-cancel-route').style.display = 'none';
@@ -487,27 +467,64 @@
         // --- 6. RENDERING ---
         function addMarkerToMap(data) {
             const imgHtml = data.photo ? `<br><img src="${data.photo}" class="obs-image">` : '';
-            mapMarkers[data.id] = L.marker([data.lat, data.lng]).addTo(map).bindPopup(`<b>${data.species}</b><br>${data.city}<br>By ${data.observer}${imgHtml}`);
+            const popupStr = `<b>#${data.displayNum} - ${data.species}</b><br>${data.city}<br>By ${data.observer}${imgHtml}`;
+            
+            const numIcon = L.divIcon({
+                className: 'custom-number-icon',
+                html: `<div class="marker-number">${data.displayNum}</div>`,
+                iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -14]
+            });
+            mapMarkers[data.id] = L.marker([data.lat, data.lng], {icon: numIcon}).addTo(map).bindPopup(popupStr);
         }
 
         function addRecordToSidebar(data) {
             document.getElementById('empty-state').style.display = 'none';
             const div = document.createElement('div'); div.className = 'record-item'; div.id = `record-${data.id}`;
             const imgHtml = data.photo ? `<img src="${data.photo}" class="obs-image">` : '';
-            div.innerHTML = `<button class="delete-btn" onclick="deleteRecord(${data.id}, 'wildlife')">🗑️</button>
-                <strong>${data.species} (${data.category})</strong>📍 ${data.city}<br>👤 ${data.observer}${imgHtml}`;
+            
+            // NOTE: event.stopPropagation() is added here to prevent map jump when deleting
+            div.innerHTML = `<button class="delete-btn" onclick="event.stopPropagation(); deleteRecord(${data.id}, 'wildlife')">🗑️</button>
+                <strong>#${data.displayNum} - ${data.species} (${data.category})</strong>📍 ${data.city}<br>👤 ${data.observer}${imgHtml}`;
+            
+            // Feature: Click to pan map
+            div.addEventListener('click', () => {
+                map.flyTo([data.lat, data.lng], 16, { animate: true, duration: 1 });
+                mapMarkers[data.id].openPopup();
+                scrollMapToView();
+            });
+
             document.getElementById('logs-container').prepend(div);
         }
 
         function addRouteToMap(data) {
-            mapPolylines[data.id] = L.polyline(data.points, {color: '#1e88e5', weight: 4}).addTo(map).bindPopup(`<b>${data.name}</b><br>${data.distance} | ${data.time}<br>Type: ${data.type}`);
+            const popupStr = `<b>#${data.displayNum} - ${data.name}</b><br>${data.distance} | ${data.time}<br>Type: ${data.type}`;
+            const numIcon = L.divIcon({
+                className: 'custom-number-icon',
+                html: `<div class="marker-number marker-route-number">${data.displayNum}</div>`,
+                iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -14]
+            });
+            
+            const line = L.polyline(data.points, {color: '#1e88e5', weight: 4}).addTo(map).bindPopup(popupStr);
+            const startMarker = L.marker(data.points[0], {icon: numIcon}).addTo(map).bindPopup(popupStr);
+            mapPolylines[data.id] = { line: line, marker: startMarker };
         }
 
         function addRouteToSidebar(data) {
             document.getElementById('empty-routes').style.display = 'none';
             const div = document.createElement('div'); div.className = 'record-item route-item'; div.id = `route-${data.id}`;
-            div.innerHTML = `<button class="delete-btn" onclick="deleteRecord(${data.id}, 'route')">🗑️</button>
-                <strong>🚴 ${data.name}</strong>📏 ${data.distance} | ⏱️ ${data.time}<br>🔄 ${data.type}`;
+            
+            // NOTE: event.stopPropagation() is added here
+            div.innerHTML = `<button class="delete-btn" onclick="event.stopPropagation(); deleteRecord(${data.id}, 'route')">🗑️</button>
+                <strong>#${data.displayNum} 🚴 ${data.name}</strong>📏 ${data.distance} | ⏱️ ${data.time}<br>🔄 ${data.type}`;
+            
+            // Feature: Click to fit route bounds to map screen
+            div.addEventListener('click', () => {
+                const routeLine = mapPolylines[data.id].line;
+                map.fitBounds(routeLine.getBounds(), { padding: [50, 50], animate: true });
+                mapPolylines[data.id].marker.openPopup();
+                scrollMapToView();
+            });
+
             document.getElementById('routes-container').prepend(div);
         }
 
@@ -521,8 +538,8 @@
                 localStorage.setItem('ecoRecords', JSON.stringify(records));
                 if(records.length===0) document.getElementById('empty-state').style.display = 'block';
             } else {
-                map.removeLayer(mapPolylines[id]); delete mapPolylines[id];
-                document.getElementById(`route-${id}`).remove();
+                map.removeLayer(mapPolylines[id].line); map.removeLayer(mapPolylines[id].marker); 
+                delete mapPolylines[id]; document.getElementById(`route-${id}`).remove();
                 routes = routes.filter(r => r.id !== id);
                 localStorage.setItem('ecoRoutes', JSON.stringify(routes));
                 if(routes.length===0) document.getElementById('empty-routes').style.display = 'block';
@@ -531,17 +548,19 @@
 
         function exportData(type) {
             if (records.length === 0) return alert("No data to export.");
-            let csv = "ID,Species,Category,Observer,Date,Lat,Lng,City,HasPhoto\n";
-            records.forEach(r => csv += `"${r.id}","${r.species}","${r.category}","${r.observer}","${r.date}",${r.lat},${r.lng},"${r.city}","${r.photo ? "Yes" : "No"}"\n`);
-            
+            let csv = "Record_Num,ID,Species,Category,Observer,Date,Lat,Lng,City,HasPhoto\n";
+            records.forEach(r => csv += `"${r.displayNum}","${r.id}","${r.species}","${r.category}","${r.observer}","${r.date}",${r.lat},${r.lng},"${r.city}","${r.photo ? "Yes" : "No"}"\n`);
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `wildlife_data.csv`;
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        // Boot
-        records.forEach(r => { addMarkerToMap(r); addRecordToSidebar(r); });
-        routes.forEach(r => { addRouteToMap(r); addRouteToSidebar(r); });
+        // Boot & Update existing local storage if missing displayNum
+        records.forEach((r, index) => { if (!r.displayNum) r.displayNum = index + 1; addMarkerToMap(r); addRecordToSidebar(r); });
+        localStorage.setItem('ecoRecords', JSON.stringify(records));
+        
+        routes.forEach((r, index) => { if (!r.displayNum) r.displayNum = index + 1; addRouteToMap(r); addRouteToSidebar(r); });
+        localStorage.setItem('ecoRoutes', JSON.stringify(routes));
     </script>
 </body>
 </html>
