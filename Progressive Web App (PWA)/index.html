@@ -81,21 +81,48 @@
         .btn-danger:hover { background-color: #c62828; }
 
         .record-list { margin-top: 20px; flex: 1; }
-        .record-item { background: #f9f9f9; border: 1px solid var(--border-color); padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 0.9rem; position: relative; transition: 0.2s; }
+        
+        /* Updated Record Item for Click-To-Pan */
+        .record-item { background: #f9f9f9; border: 1px solid var(--border-color); padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 0.9rem; position: relative; transition: 0.2s; cursor: pointer; }
+        .record-item:hover { background-color: #f0f4f1; border-color: var(--primary-color); }
+        .route-item:hover { background-color: #f0f7fd; border-color: var(--route-color); }
+
         .record-item strong { color: var(--primary-color); display: block; font-size: 1rem; margin-bottom: 3px; padding-right: 30px; }
         .record-item.route-item strong { color: var(--route-color); }
         
         .obs-image { max-width: 100%; max-height: 120px; border-radius: 4px; margin-top: 8px; border: 1px solid #ddd; object-fit: cover;}
 
-        .delete-btn { position: absolute; top: 10px; right: 10px; background: transparent; border: none; font-size: 1.3rem; cursor: pointer; padding: 5px; color: #888;}
+        /* Delete Button Layering */
+        .delete-btn { position: absolute; top: 10px; right: 10px; background: transparent; border: none; font-size: 1.3rem; cursor: pointer; padding: 5px; color: #888; z-index: 2; }
         .delete-btn:hover { color: #e53935; }
 
         #map { flex: 1; height: 100%; z-index: 1; }
 
+        /* Custom GPS Locate Button */
+        .locate-btn {
+            background: white; border: none; border-radius: 4px;
+            width: 34px; height: 34px; font-size: 1.2rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.65); transition: background-color 0.2s;
+        }
+        .locate-btn:hover { background: #f4f4f4; }
+
+        /* Custom Numbered Pins */
+        .custom-number-icon { background: none; border: none; }
+        .marker-number {
+            background-color: var(--primary-color); color: white;
+            border: 2px solid white; border-radius: 50%;
+            width: 28px; height: 28px; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: bold; font-size: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .marker-route-number { background-color: var(--route-color); }
+
         /* Install App Button */
         #install-btn {
             background-color: #ff9800;
-            display: none; /* Hidden until browser says PWA is ready */
+            display: none; 
         }
         #install-btn:hover { background-color: #e68a00; }
 
@@ -236,10 +263,9 @@
         const installBtn = document.getElementById('install-btn');
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
             deferredPrompt = e;
-            installBtn.style.display = 'block'; // Show our custom install button
+            installBtn.style.display = 'block'; 
 
             installBtn.addEventListener('click', () => {
                 installBtn.style.display = 'none';
@@ -267,6 +293,34 @@
         L.control.layers(baseMaps).addTo(map);
 
         window.addEventListener('resize', () => map.invalidateSize());
+
+        // --- GPS LOCATE CONTROL ---
+        const locateControl = L.control({position: 'bottomright'});
+        locateControl.onAdd = function (map) {
+            const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            div.innerHTML = `<button class="locate-btn" title="Current Location">🎯</button>`;
+            
+            // Shield stops the click from hitting the map underneath
+            L.DomEvent.disableClickPropagation(div);
+
+            div.onclick = function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                map.locate({setView: true, maxZoom: 16});
+            };
+            return div;
+        };
+        locateControl.addTo(map);
+
+        let userLocationMarker;
+        map.on('locationfound', function(e) {
+            if (userLocationMarker) map.removeLayer(userLocationMarker);
+            userLocationMarker = L.circleMarker(e.latlng, {
+                radius: 8, fillColor: "#2196F3", color: "#fff", weight: 2, opacity: 1, fillOpacity: 1
+            }).addTo(map).bindPopup("You are here.").openPopup();
+        });
+        map.on('locationerror', function() { alert("Could not access location. Please check browser permissions."); });
+
 
         // --- STATE DATABASES ---
         let records = JSON.parse(localStorage.getItem('ecoRecords')) || [];
@@ -299,6 +353,13 @@
         function scrollToSidebar() {
             if (window.innerWidth <= 768) {
                 document.getElementById('sidebar-panel').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Mobile utility: scroll back to map when item is clicked
+        function scrollMapToView() {
+            if (window.innerWidth <= 768) { 
+                window.scrollTo({ top: 0, behavior: 'smooth' }); 
             }
         }
 
@@ -370,8 +431,12 @@
             const photoFile = document.getElementById('photo').files[0];
             const compressedPhotoData = await processImage(photoFile);
 
+            // Establish visual # sequence
+            const displayNum = records.length > 0 ? Math.max(...records.map(r => r.displayNum || 0)) + 1 : 1;
+
             const data = {
                 id: Date.now(), 
+                displayNum: displayNum,
                 species: document.getElementById('species').value,
                 category: document.getElementById('category').value, 
                 observer: document.getElementById('observer').value,
@@ -449,9 +514,15 @@
             const type = document.getElementById('route-type').value;
             if (type === 'Loop') activeRoutePoints.push(activeRoutePoints[0]); 
 
+            const displayNum = routes.length > 0 ? Math.max(...routes.map(r => r.displayNum || 0)) + 1 : 1;
+
             const data = {
-                id: Date.now(), name: document.getElementById('route-name').value || "Unnamed Route", type: type,
-                distance: document.getElementById('route-dist').value, time: document.getElementById('route-time').value,
+                id: Date.now(), 
+                displayNum: displayNum,
+                name: document.getElementById('route-name').value || "Unnamed Route", 
+                type: type,
+                distance: document.getElementById('route-dist').value, 
+                time: document.getElementById('route-time').value,
                 points: activeRoutePoints.map(p => ({lat: p.lat, lng: p.lng}))
             };
 
@@ -474,30 +545,70 @@
             document.getElementById('route-dist').value = ''; document.getElementById('route-time').value = '';
         }
 
-        // --- 6. RENDERING ---
+        // --- 6. RENDERING WITH NUMBERED MARKERS & CLICK-TO-PAN ---
         function addMarkerToMap(data) {
             const imgHtml = data.photo ? `<br><img src="${data.photo}" class="obs-image">` : '';
-            mapMarkers[data.id] = L.marker([data.lat, data.lng]).addTo(map).bindPopup(`<b>${data.species}</b><br>${data.city}<br>By ${data.observer}${imgHtml}`);
+            const popupStr = `<b>#${data.displayNum} - ${data.species}</b><br>${data.city}<br>By ${data.observer}${imgHtml}`;
+            
+            // Render custom HTML number icon
+            const numIcon = L.divIcon({
+                className: 'custom-number-icon',
+                html: `<div class="marker-number">${data.displayNum}</div>`,
+                iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -14]
+            });
+            mapMarkers[data.id] = L.marker([data.lat, data.lng], {icon: numIcon}).addTo(map).bindPopup(popupStr);
         }
 
         function addRecordToSidebar(data) {
             document.getElementById('empty-state').style.display = 'none';
             const div = document.createElement('div'); div.className = 'record-item'; div.id = `record-${data.id}`;
             const imgHtml = data.photo ? `<img src="${data.photo}" class="obs-image">` : '';
-            div.innerHTML = `<button class="delete-btn" onclick="deleteRecord(${data.id}, 'wildlife')">🗑️</button>
-                <strong>${data.species} (${data.category})</strong>📍 ${data.city}<br>👤 ${data.observer}${imgHtml}`;
+            
+            // Stop Event Propagation on Trash Can
+            div.innerHTML = `<button class="delete-btn" onclick="event.stopPropagation(); deleteRecord(${data.id}, 'wildlife')">🗑️</button>
+                <strong>#${data.displayNum} - ${data.species} (${data.category})</strong>📍 ${data.city}<br>👤 ${data.observer}${imgHtml}`;
+            
+            // Sidebar Click-to-Pan Event
+            div.addEventListener('click', () => {
+                map.flyTo([data.lat, data.lng], 16, { animate: true, duration: 1 });
+                mapMarkers[data.id].openPopup();
+                scrollMapToView();
+            });
+
             document.getElementById('logs-container').prepend(div);
         }
 
         function addRouteToMap(data) {
-            mapPolylines[data.id] = L.polyline(data.points, {color: '#1e88e5', weight: 4}).addTo(map).bindPopup(`<b>${data.name}</b><br>${data.distance} | ${data.time}<br>Type: ${data.type}`);
+            const popupStr = `<b>#${data.displayNum} - ${data.name}</b><br>${data.distance} | ${data.time}<br>Type: ${data.type}`;
+            
+            const numIcon = L.divIcon({
+                className: 'custom-number-icon',
+                html: `<div class="marker-number marker-route-number">${data.displayNum}</div>`,
+                iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -14]
+            });
+            
+            const line = L.polyline(data.points, {color: '#1e88e5', weight: 4}).addTo(map).bindPopup(popupStr);
+            const startMarker = L.marker(data.points[0], {icon: numIcon}).addTo(map).bindPopup(popupStr);
+            
+            // Store both line and marker for deletion purposes
+            mapPolylines[data.id] = { line: line, marker: startMarker };
         }
 
         function addRouteToSidebar(data) {
             document.getElementById('empty-routes').style.display = 'none';
             const div = document.createElement('div'); div.className = 'record-item route-item'; div.id = `route-${data.id}`;
-            div.innerHTML = `<button class="delete-btn" onclick="deleteRecord(${data.id}, 'route')">🗑️</button>
-                <strong>🚴 ${data.name}</strong>📏 ${data.distance} | ⏱️ ${data.time}<br>🔄 ${data.type}`;
+            
+            div.innerHTML = `<button class="delete-btn" onclick="event.stopPropagation(); deleteRecord(${data.id}, 'route')">🗑️</button>
+                <strong>#${data.displayNum} 🚴 ${data.name}</strong>📏 ${data.distance} | ⏱️ ${data.time}<br>🔄 ${data.type}`;
+            
+            // Click to frame full route in view
+            div.addEventListener('click', () => {
+                const routeLine = mapPolylines[data.id].line;
+                map.fitBounds(routeLine.getBounds(), { padding: [50, 50], animate: true });
+                mapPolylines[data.id].marker.openPopup();
+                scrollMapToView();
+            });
+
             document.getElementById('routes-container').prepend(div);
         }
 
@@ -511,8 +622,8 @@
                 localStorage.setItem('ecoRecords', JSON.stringify(records));
                 if(records.length===0) document.getElementById('empty-state').style.display = 'block';
             } else {
-                map.removeLayer(mapPolylines[id]); delete mapPolylines[id];
-                document.getElementById(`route-${id}`).remove();
+                map.removeLayer(mapPolylines[id].line); map.removeLayer(mapPolylines[id].marker); 
+                delete mapPolylines[id]; document.getElementById(`route-${id}`).remove();
                 routes = routes.filter(r => r.id !== id);
                 localStorage.setItem('ecoRoutes', JSON.stringify(routes));
                 if(routes.length===0) document.getElementById('empty-routes').style.display = 'block';
@@ -521,17 +632,20 @@
 
         function exportData(type) {
             if (records.length === 0) return alert("No data to export.");
-            let csv = "ID,Species,Category,Observer,Date,Lat,Lng,City,HasPhoto\n";
-            records.forEach(r => csv += `"${r.id}","${r.species}","${r.category}","${r.observer}","${r.date}",${r.lat},${r.lng},"${r.city}","${r.photo ? "Yes" : "No"}"\n`);
+            let csv = "Record_Num,ID,Species,Category,Observer,Date,Lat,Lng,City,HasPhoto\n";
+            records.forEach(r => csv += `"${r.displayNum}","${r.id}","${r.species}","${r.category}","${r.observer}","${r.date}",${r.lat},${r.lng},"${r.city}","${r.photo ? "Yes" : "No"}"\n`);
             
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `wildlife_data.csv`;
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        // Boot
-        records.forEach(r => { addMarkerToMap(r); addRecordToSidebar(r); });
-        routes.forEach(r => { addRouteToMap(r); addRouteToSidebar(r); });
+        // Boot & Update existing local storage if missing displayNum
+        records.forEach((r, index) => { if (!r.displayNum) r.displayNum = index + 1; addMarkerToMap(r); addRecordToSidebar(r); });
+        localStorage.setItem('ecoRecords', JSON.stringify(records));
+        
+        routes.forEach((r, index) => { if (!r.displayNum) r.displayNum = index + 1; addRouteToMap(r); addRouteToSidebar(r); });
+        localStorage.setItem('ecoRoutes', JSON.stringify(routes));
     </script>
 </body>
 </html>
