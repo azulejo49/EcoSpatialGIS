@@ -111,7 +111,7 @@ export function MapView({ features, baseLayer, toolMode, onMapClick, mapCenter, 
           />
         )}
 
-        {features.map((feature) => {
+        {features.map((feature, index) => {
           if (feature.type === 'LineString') {
             const coords = feature.coordinates as [number, number][];
             return (
@@ -125,7 +125,16 @@ export function MapView({ features, baseLayer, toolMode, onMapClick, mapCenter, 
                 <Marker 
                   position={[coords[0][1], coords[0][0]]}
                   icon={L.divIcon({
-                    html: renderToStaticMarkup(<div className="text-amber-500 bg-white rounded-full p-1 shadow-md border border-amber-200"><Bike className="w-5 h-5"/></div>),
+                    html: renderToStaticMarkup(
+                      <div className="relative">
+                        <div className="text-amber-500 bg-white rounded-full p-1 shadow-md border border-amber-200">
+                          <Bike className="w-5 h-5"/>
+                        </div>
+                        <div className="absolute -top-1 -right-2 bg-slate-800 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow border border-slate-600">
+                          {index + 1}
+                        </div>
+                      </div>
+                    ),
                     className: 'custom-leaflet-icon',
                     iconSize: [32, 32],
                     iconAnchor: [16, 16],
@@ -153,7 +162,26 @@ export function MapView({ features, baseLayer, toolMode, onMapClick, mapCenter, 
           <Marker 
             key={feature.id} 
             position={[feature.coordinates[1], feature.coordinates[0]]} // Leaflet expects [lat, lng]
-            icon={feature.properties.recordType === 'wildlife' ? customWildlifeIcon : customDivIcon}
+            icon={L.divIcon({
+              html: renderToStaticMarkup(
+                <div className="relative">
+                  <div className={`drop-shadow-md ${feature.properties.recordType === 'wildlife' ? 'text-emerald-500' : 'text-sky-500'}`}>
+                    {feature.properties.recordType === 'wildlife' ? (
+                      <Leaf className="w-7 h-7 fill-emerald-100" strokeWidth={1.5} />
+                    ) : (
+                      <MapPin className="w-8 h-8 fill-sky-100" strokeWidth={1.5} />
+                    )}
+                  </div>
+                  <div className={`absolute ${feature.properties.recordType === 'wildlife' ? '-top-1' : 'top-0'} -right-2 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow border ${feature.properties.recordType === 'wildlife' ? 'bg-emerald-600 border-emerald-400' : 'bg-sky-600 border-sky-400'}`}>
+                    {index + 1}
+                  </div>
+                </div>
+              ),
+              className: 'custom-leaflet-icon',
+              iconSize: [32, 32],
+              iconAnchor: [16, 32],
+              popupAnchor: [0, -32],
+            })}
           >
             <Popup className="custom-popup">
               <div className="p-1 min-w-[200px]">
