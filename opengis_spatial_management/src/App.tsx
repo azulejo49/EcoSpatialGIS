@@ -7,7 +7,7 @@ import { RecordWildlifeForm } from './components/RecordWildlifeForm';
 import { CycleRouteBuilder } from './components/CycleRouteBuilder';
 import { ToolMode, BaseLayer, SpatialFeature } from './types';
 import { exportToGeoJSON, calculateDistanceKm } from './utils';
-import { MapPin } from 'lucide-react';
+import { MapPin, LocateFixed, Loader2 } from 'lucide-react';
 
 export default function App() {
   // Global Application State Management
@@ -41,11 +41,34 @@ export default function App() {
   // Map viewport memory
   const [mapCenter, setMapCenter] = useState<[number, number]>([51.505, -0.09]);
   const [mapZoom, setMapZoom] = useState<number>(3);
+  const [isLocating, setIsLocating] = useState<boolean>(false);
 
   // Apply global class for mouse cursors based on tool mode
   useEffect(() => {
     document.body.className = `mode-${toolMode}`;
   }, [toolMode]);
+
+  const handleCurrentLocation = () => {
+    if (!('geolocation' in navigator)) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setMapCenter([position.coords.latitude, position.coords.longitude]);
+        setMapZoom(15);
+        setIsLocating(false);
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        alert("Unable to retrieve your location. Please check browser permissions.");
+        setIsLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
 
   const handleMapClick = async (coordinates: [number, number]) => {
     const [lng, lat] = coordinates;
@@ -211,6 +234,20 @@ export default function App() {
             onClick={() => setSidebarOpen(false)}
           />
         )}
+
+        {/* Current Location Button */}
+        <button
+          onClick={handleCurrentLocation}
+          disabled={isLocating}
+          className="absolute bottom-6 right-6 z-[30] bg-white text-slate-700 hover:bg-slate-50 hover:text-sky-600 rounded-full p-3 shadow-lg border border-slate-200 transition-all hover:scale-105 active:scale-95 disabled:opacity-70 disabled:hover:scale-100"
+          title="Current Location"
+        >
+          {isLocating ? (
+            <Loader2 className="w-6 h-6 animate-spin text-sky-600" />
+          ) : (
+            <LocateFixed className="w-6 h-6" />
+          )}
+        </button>
 
         {/* Cycle Route Builder Panel */}
         {toolMode === 'cycle-route' && (
