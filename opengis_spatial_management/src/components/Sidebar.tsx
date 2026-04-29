@@ -81,7 +81,7 @@ export function Sidebar({ features, setFeatures, baseLayer, setBaseLayer, onCent
                   No spatial data added yet. Use the Add Point tool on the map.
                 </div>
               ) : (
-                features.map((feature) => (
+                features.map((feature, index) => (
                   <div 
                     key={feature.id} 
                     className={`flex flex-col rounded p-3 cursor-pointer border transition-colors group mb-1 ${
@@ -95,6 +95,7 @@ export function Sidebar({ features, setFeatures, baseLayer, setBaseLayer, onCent
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-2 truncate pr-2">
+                        <span className="text-xs font-bold text-slate-500 w-4 text-center">{index + 1}</span>
                         {feature.properties.recordType === 'wildlife' ? (
                           <Leaf className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
                         ) : feature.properties.recordType === 'route' ? (
