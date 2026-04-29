@@ -15,16 +15,17 @@
 ## Features
 - **Spatial Management:** Add point markers, visualize data, and manage dynamic layers.
 - **Client-Side Processing:** No backend required, ensuring complete data privacy.
-- **Csv Ready:** Data can be exported for use in standardized GIS tools (QGIS, ArcGIS).
+- **Csv/Json Ready:** Data can be exported for use in standardized GIS tools (QGIS, ArcGIS).
 - **In-App Documentation:** Built-in guidance for onboarding new users cleanly.
 - **Records Wild-Life WorldWide
+- **Records Cycle-Routes
 ## 🏗️ Architecture & Tech Stack
 
 This project was built focusing on performance to guarantee fluid cartographic rendering in native browsers.
 
 * **Framework:** HTML
 * **Styling:** Tailwind CSS V4
-* **Map Engine:** Leaflet + react-leaflet
+* **Map Engine:** Leaflet
 * **Data Persistence:** Local browser session (Exportable to local disk)
 ## 📖 Usage Instructions
 
